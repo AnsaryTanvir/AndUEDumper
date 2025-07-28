@@ -19,15 +19,6 @@ jobs:
         with:
           submodules: true
 
-      - name: List repo root directory
-        run: ls -l
-
-      - name: List AndUEDumper directory
-        run: ls -l AndUEDumper
-
-      - name: List AndUEDumper/AndUEDumper directory
-        run: ls -l AndUEDumper/AndUEDumper
-
       - name: Download Android NDK
         run: |
           wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip -O ndk.zip
@@ -39,8 +30,15 @@ jobs:
       - name: Set NDK_HOME environment variable
         run: echo "NDK_HOME=${{ runner.temp }}/android-ndk" >> $GITHUB_ENV
 
+      - name: Debug NDK folder
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
+        run: |
+          echo "NDK_HOME=$NDK_HOME"
+          ls -l $NDK_HOME
+
       - name: Build AndUEDumper
-        working-directory: AndUEDumper/AndUEDumper  # Adjust this path after checking above listings
+        working-directory: AndUEDumper
         env:
           NDK_HOME: ${{ env.NDK_HOME }}
         run: |
@@ -49,42 +47,13 @@ jobs:
           make
 
       - name: List built binaries
-        working-directory: AndUEDumper/AndUEDumper
+        working-directory: AndUEDumper
         env:
           NDK_HOME: ${{ env.NDK_HOME }}
         run: ls -l
 
-      - name: Upload specific binary artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: AndUEDumper-binary
-          path: AndUEDumper/AndUEDumper/UEDump3r
-
-  release:
-    needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: AndUEDumper-binary
-          path: ./release-artifacts
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.sha }}
-          name: Release ${{ github.sha }}
-          body: Automated release created from GitHub Actions build.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./release-artifacts/**
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: AndUEDumper-binaries
+          path: AndUEDumper/UEDump3r*
