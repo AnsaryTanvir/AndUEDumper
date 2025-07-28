@@ -32,17 +32,17 @@ jobs:
         run: echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
 
       - name: Build AndUEDumper
-        working-directory: AndUEDumper/AndUEDumper
+        working-directory: AndUEDumper
         run: |
           make clean
           make
 
       - name: List built binaries
-        working-directory: AndUEDumper/AndUEDumper
+        working-directory: AndUEDumper
         run: ls -l
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: AndUEDumper-binaries
-          path: AndUEDumper/AndUEDumper/UEDump3r*
+          path: AndUEDumper/UEDump3r*
