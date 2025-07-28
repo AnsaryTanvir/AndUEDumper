@@ -11,23 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NDK_VERSION: "25.2.9519653"   # Set the NDK version you want to use
-      NDK_HOME: ${{ runner.temp }}/android-ndk
+      NDK_VERSION: "25.2.9519653"
+      NDK_HOME: $RUNNER_TEMP/android-ndk
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          submodules: true   # Important, repo uses submodules!
+          submodules: true
 
       - name: Download Android NDK
         run: |
           wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip -O ndk.zip
-          unzip -q ndk.zip -d ${{ runner.temp }}
-          mv ${{ runner.temp }}/android-ndk-r25b $NDK_HOME
+          unzip -q ndk.zip -d $RUNNER_TEMP
+          mv $RUNNER_TEMP/android-ndk-r25b $NDK_HOME
 
       - name: Set NDK_HOME environment variable
-        run: echo "NDK_HOME=${{ env.NDK_HOME }}" >> $GITHUB_ENV
+        run: echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
 
       - name: Build AndUEDumper
         working-directory: AndUEDumper/AndUEDumper
@@ -43,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AndUEDumper-binaries
-          path: AndUEDumper/AndUEDumper/UEDump3r*  # or your actual binary path
+          path: AndUEDumper/AndUEDumper/UEDump3r*
