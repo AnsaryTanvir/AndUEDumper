@@ -52,8 +52,57 @@ jobs:
           NDK_HOME: ${{ env.NDK_HOME }}
         run: ls -l
 
-      - name: Upload artifacts
+      ####### Solution 1: Upload specific binary file #######
+      # Adjust the path below if your binary name or location is different
+      - name: Upload specific binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AndUEDumper-binaries
-          path: AndUEDumper/UEDump3r*
+          name: AndUEDumper-binary
+          path: AndUEDumper/UEDump3r
+
+      ####### Solution 2: Upload entire build folder #######
+      # Uncomment to upload everything inside the AndUEDumper folder
+      # - name: Upload entire build directory
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: AndUEDumper-full-build
+      #     path: AndUEDumper/**
+
+  release:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts (Solution 1)
+        uses: actions/download-artifact@v3
+        with:
+          name: AndUEDumper-binary
+          path: ./release-artifacts
+
+      # Uncomment the following block and comment the above download step
+      # if you use Solution 2 artifact upload:
+      #
+      # - name: Download build artifacts (Solution 2)
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: AndUEDumper-full-build
+      #     path: ./release-artifacts
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.sha }}
+          name: Release ${{ github.sha }}
+          body: |
+            Automated release created from GitHub Actions build.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./release-artifacts/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
