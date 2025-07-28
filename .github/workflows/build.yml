@@ -31,9 +31,15 @@ jobs:
       - name: Set NDK_HOME environment variable
         run: echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
 
+      - name: Debug NDK folder
+        run: ls -l $NDK_HOME
+
       - name: Build AndUEDumper
         working-directory: AndUEDumper
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
         run: |
+          export PATH=$NDK_HOME:$PATH
           make clean
           make
 
