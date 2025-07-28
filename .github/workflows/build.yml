@@ -32,7 +32,11 @@ jobs:
         run: echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
 
       - name: Debug NDK folder
-        run: ls -l $NDK_HOME
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
+        run: |
+          echo "NDK_HOME=$NDK_HOME"
+          ls -l $NDK_HOME
 
       - name: Build AndUEDumper
         working-directory: AndUEDumper
@@ -45,6 +49,8 @@ jobs:
 
       - name: List built binaries
         working-directory: AndUEDumper
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
         run: ls -l
 
       - name: Upload artifacts
