@@ -15,7 +15,7 @@ jobs:
       NDK_HOME: $RUNNER_TEMP/android-ndk
 
     steps:
-      - name: Checkout code
+      - name: Checkout code with submodules
         uses: actions/checkout@v3
         with:
           submodules: true
@@ -40,7 +40,7 @@ jobs:
         run: ls -l
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AndUEDumper-binaries
           path: AndUEDumper/AndUEDumper/UEDump3r*
