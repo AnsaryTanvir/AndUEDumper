@@ -12,7 +12,7 @@ jobs:
 
     env:
       NDK_VERSION: "25.2.9519653"
-      NDK_HOME: $RUNNER_TEMP/android-ndk
+      NDK_HOME: ${{ runner.temp }}/android-ndk
 
     steps:
       - name: Checkout code with submodules
@@ -23,13 +23,13 @@ jobs:
       - name: Download Android NDK
         run: |
           wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip -O ndk.zip
-          unzip -q ndk.zip -d $RUNNER_TEMP
-          mkdir -p $RUNNER_TEMP/android-ndk
-          mv $RUNNER_TEMP/android-ndk-r25b/* $RUNNER_TEMP/android-ndk/
-          rm -rf $RUNNER_TEMP/android-ndk-r25b
+          unzip -q ndk.zip -d ${{ runner.temp }}
+          mkdir -p ${{ runner.temp }}/android-ndk
+          mv ${{ runner.temp }}/android-ndk-r25b/* ${{ runner.temp }}/android-ndk/
+          rm -rf ${{ runner.temp }}/android-ndk-r25b
 
       - name: Set NDK_HOME environment variable
-        run: echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
+        run: echo "NDK_HOME=${{ runner.temp }}/android-ndk" >> $GITHUB_ENV
 
       - name: Debug NDK folder
         env:
