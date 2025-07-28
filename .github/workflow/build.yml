@@ -1,0 +1,46 @@
+name: Build AndUEDumper
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      NDK_VERSION: "25.2.9519653"
+      NDK_HOME: $RUNNER_TEMP/android-ndk
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Download Android NDK
+        run: |
+          wget https://dl.google.com/android/repository/android-ndk-r25b-linux.zip -O ndk.zip
+          unzip -q ndk.zip -d $RUNNER_TEMP
+          mv $RUNNER_TEMP/android-ndk-r25b $NDK_HOME
+
+      - name: Set NDK_HOME environment variable
+        run: echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
+
+      - name: Build AndUEDumper
+        working-directory: AndUEDumper/AndUEDumper
+        run: |
+          make clean
+          make
+
+      - name: List built binaries
+        working-directory: AndUEDumper/AndUEDumper
+        run: ls -l
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: AndUEDumper-binaries
+          path: AndUEDumper/AndUEDumper/UEDump3r*
